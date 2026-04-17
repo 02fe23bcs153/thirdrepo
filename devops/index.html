@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Git Collaboration</title>
+</head>
+<body>
+
+<h1>🚀 Git Collaboration App</h1>
+
+<h2>Create Repository</h2>
+<input id="repoName" placeholder="Enter repo name">
+<button onclick="createRepo()">Create</button>
+
+<h2>Upload File</h2>
+<input id="repo" placeholder="Enter repo name">
+<input type="file" id="file">
+<button onclick="uploadFile()">Upload</button>
+
+<h2>Repositories</h2>
+<button onclick="loadRepos()">Show Repos</button>
+<ul id="repos"></ul>
+
+<script>
+async function createRepo() {
+  const repoName = document.getElementById("repoName").value;
+
+  const res = await fetch("/create-repo", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ repoName })
+  });
+
+  alert(await res.text());
+}
+
+async function uploadFile() {
+  const repo = document.getElementById("repo").value;
+  const file = document.getElementById("file").files[0];
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`/upload/${repo}`, {
+    method: "POST",
+    body: formData
+  });
+
+  alert(await res.text());
+}
+
+async function loadRepos() {
+  const res = await fetch("/repos");
+  const data = await res.json();
+
+  const list = document.getElementById("repos");
+  list.innerHTML = "";
+
+  data.forEach(repo => {
+    const li = document.createElement("li");
+    li.innerText = repo;
+    list.appendChild(li);
+  });
+}
+</script>
+
+</body>
+</html>
